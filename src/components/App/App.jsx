@@ -1,86 +1,83 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
+import { animateScroll as scroll } from 'react-scroll';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Loader from 'components/Loader/Loader';
 import Searchbar from 'components/Searchbar';
 import { Container } from './App.styled';
 import * as API from '../../Services/img_api';
 import Button from 'components/Button';
 import ImageGallery from 'components/ImageGallery';
-import { animateScroll as scroll } from 'react-scroll';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import Waiting from 'components/Waiting';
+import Error from 'components/Error';
 
-export class App extends Component {
-  state = {
-    query: '',
-    page: 1,
-    images: [],
-    loading: false,
-    totalPages: null,
-    error: false,
-  };
+export function App() {
+  const [query, setQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [totalPages, setTotalPages] = useState(null);
+  const [error, setError] = useState(false);
 
-  setImages = async nextQuery => {
-    try {
-      await this.setState({ page: 1 });
-      this.setState({ query: nextQuery, loading: true, images: [] });
-
-      const data = await API.fetchImgs(nextQuery, this.state.page);
-
-      toast.success(`We found ${data.totalHits} images 4 u :)`);
-
-      this.setState({
-        images: data.hits,
-        totalPages: Math.ceil(data.totalHits / 12),
-      });
-    } catch (error) {
-      this.setState({ error: true });
-    } finally {
-      this.setState({ loading: false });
+  useEffect(() => {
+    if (query === '') {
+      return;
     }
-  };
+    const setQueryImages = async () => {
+      try {
+        const data = await API.fetchImgs(query, page);
+        console.log(data.totalHits);
+        if (data.totalHits === 0) {
+        }
 
-  onSubmit = query => {
-    this.setState({ query });
-    this.setImages(query);
-  };
+        if (page === 1) {
+          data.totalHits === 0
+            ? toast.warn(
+                "We couldn't find anything, try writing something else. :)"
+              )
+            : toast.success(`We found ${data.totalHits} images 4 u :)`);
 
-  onLoadMore = async () => {
-    const { query, page } = this.state;
+          setTotalPages(Math.ceil(data.totalHits / 12));
+        }
 
-    try {
-      let nextPage = page + 1;
-      this.setState(({ page }) => ({ page: page + 1 }));
-      this.setState({ loading: true });
+        // total page count
 
-      const data = await API.fetchImgs(query, nextPage);
-
-      if (this.state.totalPages === this.state.page) {
-        toast.warn(
-          'Unfortunately we have run out of photos on this request  :('
-        );
+        if (Math.ceil(data.totalHits / 12) === page) {
+          toast.warn("Unfortunately you've reached the last page ");
+        }
+        setImages(prevImages => [...prevImages, ...data.hits]);
+      } catch (error) {
+        setError(true);
+        console.log(error);
+      } finally {
+        setLoading(false);
       }
-      this.setState(({ images }) => ({ images: [...images, ...data.hits] }));
-      scroll.scrollToBottom();
-    } catch (error) {
-      this.setState({ error: true });
-    } finally {
-      this.setState({ loading: false });
-    }
+    };
+
+    setQueryImages();
+  }, [page, query]);
+
+  const onSubmit = query => {
+    setQuery(query);
+    setImages([]);
+    setPage(1);
   };
 
-  render() {
-    const { images, totalPages, page, loading } = this.state;
-    return (
-      <Container>
-        <Searchbar onSubmit={this.onSubmit} isSearching={this.state.loading} />
-        <ImageGallery images={images} />
-        {loading && <Loader />}
+  const onLoadMore = () => {
+    setPage(prevPage => prevPage + 1);
+    scroll.scrollToBottom();
+  };
 
-        {images.length > 0 && totalPages > page && !loading && (
-          <Button onClick={this.onLoadMore} />
-        )}
-        <ToastContainer />
-      </Container>
-    );
-  }
+  return (
+    <Container>
+      <Searchbar onSubmit={onSubmit} isSearching={loading} />
+      {images.length ? <ImageGallery images={images} /> : !error && <Waiting />}
+      {loading && <Loader />}
+      {error && <Error />}
+      {images.length > 0 && totalPages > page && !loading && (
+        <Button onClick={onLoadMore} />
+      )}
+      <ToastContainer />
+    </Container>
+  );
 }

@@ -1,27 +1,22 @@
-import { Component } from 'react';
+import { useEffect } from 'react';
 import { Window, Overlay } from './Modal.styled';
 import { createPortal } from 'react-dom';
 
 const portal = document.querySelector('#modal-root');
 
-export default class Modal extends Component {
-  componentDidMount() {
-    window.addEventListener('keydown', this.props.onPressEsc);
-  }
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.props.onPressEsc);
-  }
+export default function Modal({ bigUrl, alt, onBackdropClick, onPressEsc }) {
+  useEffect(() => {
+    window.addEventListener('keydown', onPressEsc);
 
-  render() {
-    const { bigUrl, alt, onBackdropClick } = this.props;
+    return () => window.removeEventListener('keydown', onPressEsc);
+  });
 
-    return createPortal(
-      <Overlay onClick={onBackdropClick}>
-        <Window>
-          <img src={bigUrl} alt={alt} />
-        </Window>
-      </Overlay>,
-      portal
-    );
-  }
+  return createPortal(
+    <Overlay onClick={onBackdropClick}>
+      <Window>
+        <img src={bigUrl} alt={alt} width="1000" />
+      </Window>
+    </Overlay>,
+    portal
+  );
 }

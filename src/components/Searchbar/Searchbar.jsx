@@ -1,47 +1,44 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { ReactComponent as SearchIcon } from '../../icons/SearchIcon.svg';
 import { Header, Form, Button, Span, Input } from './Searchbar.styled';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export default class Searchbar extends Component {
-  state = {
-    query: '',
+export default function Searchbar({ onSubmit, isSearching }) {
+  const [query, setQuery] = useState('');
+  const onChangeInput = e => {
+    setQuery(e.target.value);
   };
-  onChangeInput = e => {
-    this.setState({ query: e.target.value });
-  };
-  onFormSubmit = e => {
+  const onFormSubmit = e => {
     e.preventDefault();
-    if (this.state.query.trim() === '') {
+    if (query.trim() === '') {
       return toast.error("Oops, you didn't write anything.");
     }
-    this.props.onSubmit(this.state.query);
-    this.setState({ query: '' });
+    onSubmit(query);
+    setQuery('');
   };
-  render() {
-    return (
-      <Header>
-        <Form onSubmit={this.onFormSubmit}>
-          <Button type="submit" disabled={this.props.isSearching}>
-            <Span>Search</Span>
-            <SearchIcon />
-          </Button>
 
-          <Input
-            type="text"
-            value={this.state.query}
-            onChange={this.onChangeInput}
-            autoComplete="off"
-            autoFocus
-            placeholder="Search images and photos"
-          />
-        </Form>
-        <ToastContainer />
-      </Header>
-    );
-  }
+  return (
+    <Header>
+      <Form onSubmit={onFormSubmit}>
+        <Button type="submit" disabled={isSearching}>
+          <Span>Search</Span>
+          <SearchIcon />
+        </Button>
+
+        <Input
+          type="text"
+          value={query}
+          onChange={onChangeInput}
+          autoComplete="off"
+          autoFocus
+          placeholder="Search images and photos"
+        />
+      </Form>
+      <ToastContainer />
+    </Header>
+  );
 }
 
 Searchbar.propTypes = {
