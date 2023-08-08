@@ -23,12 +23,10 @@ export function App() {
     if (query === '') {
       return;
     }
+    setLoading(true);
     const setQueryImages = async () => {
       try {
         const data = await API.fetchImgs(query, page);
-        console.log(data.totalHits);
-        if (data.totalHits === 0) {
-        }
 
         if (page === 1) {
           data.totalHits === 0
@@ -71,7 +69,11 @@ export function App() {
   return (
     <Container>
       <Searchbar onSubmit={onSubmit} isSearching={loading} />
-      {images.length ? <ImageGallery images={images} /> : !error && <Waiting />}
+      {images.length ? (
+        <ImageGallery images={images} />
+      ) : (
+        !error && !loading && <Waiting />
+      )}
       {loading && <Loader />}
       {error && <Error />}
       {images.length > 0 && totalPages > page && !loading && (
