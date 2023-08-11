@@ -1,0 +1,3 @@
+This app makes requests to the same server as a photo search engine written in
+JS, the current app is written in React hooks. Lead time is 6-7 hours, built
+with react-template-app.
