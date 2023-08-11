@@ -7,8 +7,12 @@ const portal = document.querySelector('#modal-root');
 export default function Modal({ bigUrl, alt, onBackdropClick, onPressEsc }) {
   useEffect(() => {
     window.addEventListener('keydown', onPressEsc);
+    document.body.style.overflow = 'hidden';
 
-    return () => window.removeEventListener('keydown', onPressEsc);
+    return () => {
+      document.body.style.overflow = 'auto';
+      window.removeEventListener('keydown', onPressEsc);
+    };
   });
 
   return createPortal(
