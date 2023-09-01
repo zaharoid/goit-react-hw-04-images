@@ -5,13 +5,14 @@ import { createPortal } from 'react-dom';
 const portal = document.querySelector('#modal-root');
 
 export default function Modal({ bigUrl, alt, onBackdropClick, onPressEsc }) {
+  const html = document.querySelector('html');
   useEffect(() => {
+    html.style.overflowY = 'hidden';
     window.addEventListener('keydown', onPressEsc);
-    document.body.style.overflow = 'hidden';
 
     return () => {
-      document.body.style.overflow = 'auto';
-      window.removeEventListener('keydown', onPressEsc);
+      html.style.overflowY = '';
+      document.body.style.overflowY = 'auto';
     };
   });
 
