@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/photo-finder-react/static/css/main.51939215.css",
-    "main.js": "/photo-finder-react/static/js/main.db17e5c8.js",
+    "main.js": "/photo-finder-react/static/js/main.f993dd8b.js",
     "index.html": "/photo-finder-react/index.html",
     "static/media/SearchIcon.svg": "/photo-finder-react/static/media/SearchIcon.ecc3dfff5e496423505d4a78814d0b6a.svg",
     "main.51939215.css.map": "/photo-finder-react/static/css/main.51939215.css.map",
-    "main.db17e5c8.js.map": "/photo-finder-react/static/js/main.db17e5c8.js.map"
+    "main.f993dd8b.js.map": "/photo-finder-react/static/js/main.f993dd8b.js.map"
   },
   "entrypoints": [
     "static/css/main.51939215.css",
-    "static/js/main.db17e5c8.js"
+    "static/js/main.f993dd8b.js"
   ]
 }
